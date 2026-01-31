@@ -1,24 +1,61 @@
+/* General page layout */
 body {
   font-family: Arial, sans-serif;
   text-align: center;
   padding-top: 50px;
+  margin: 0;
 }
 
+/* Common form container */
+form {
+  display: inline-block;
+  text-align: left;
+  margin-top: 20px;
+}
+
+/* Form fields */
+form div {
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 250px;
+  padding: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Buttons (shared) */
+button,
 .btn {
   padding: 10px 20px;
   margin: 10px;
   font-size: 16px;
   cursor: pointer;
+  border: none;
 }
 
+/* Home page buttons */
 .create-btn {
   background-color: #4CAF50;
   color: white;
-  border: none;
 }
 
 .login-btn {
   background-color: #008CBA;
   color: white;
-  border: none;
+}
+
+/* Form submit buttons (Create Account / Login) */
+form button[type="submit"] {
+  background-color: #008CBA;
+  color: white;
+  margin-top: 15px;
 }

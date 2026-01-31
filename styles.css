@@ -1,0 +1,24 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding-top: 50px;
+}
+
+.btn {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.create-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+
+.login-btn {
+  background-color: #008CBA;
+  color: white;
+  border: none;
+}

@@ -59,3 +59,41 @@ form button[type="submit"] {
   color: white;
   margin-top: 15px;
 }
+
+/* ===== Navigation Bar Styles ===== */
+
+/* The main navigation container */
+.navbar {
+  background-color: #333; /* Dark background for contrast */
+  overflow: hidden; /* Ensures content stays inside the navbar */
+}
+
+/* Unordered list styling for the navbar links */
+.navbar ul {
+  list-style: none;      /* Removes default bullet points from list items */
+  margin: 0;             /* Removes default margin around the list */
+  padding: 0;            /* Removes default padding around the list */
+  display: flex;         /* Enables flexbox layout for horizontal alignment */
+  justify-content: center; /* Centers the navigation links horizontally */
+  align-items: center;     /* Vertically centers the links within the navbar */
+}
+
+/* Each individual navigation list item */
+.navbar li {
+  padding: 14px 20px; /* Adds spacing around each link for better clickability */
+}
+
+/* Link styles inside the navigation bar */
+.navbar a {
+  color: white;          /* White text for contrast on the dark background */
+  text-decoration: none; /* Removes the underline from links */
+  font-weight: bold;     /* Makes the text stand out visually */
+}
+
+/* Hover effect for navigation links */
+.navbar a:hover {
+  background-color: #575757; /* Darkens the background when hovering */
+  border-radius: 4px;        /* Rounds the edges for a subtle styling effect */
+}
+
+

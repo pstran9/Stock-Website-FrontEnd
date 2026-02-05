@@ -11,8 +11,23 @@
 
 <body>
 
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+    </ul>
+  </nav>
+
   <h1>Cloud-Based Stock Trading Simulation</h1>
-  <p>Please choose an option:</p>
+
+  <!-- Popular Stocks (Admin Configured) -->
+<section class="stock-section">
+  <h2>Popular Stocks</h2>
+  <!-- This list will be filled by JavaScript -->
+  <ul id="stock-list"></ul>
+</section>
 
   <!-- Create Account button -->
   <button class="btn create-btn" type="button" onclick="createAccount()">
@@ -35,6 +50,8 @@
       // window.location.href = "login.html";
     }
   </script>
+
+  <script src="main.js"></script>
 
 </body>
 </html>

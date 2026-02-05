@@ -2,8 +2,40 @@
 body {
   font-family: Arial, sans-serif;
   text-align: center;
-  padding-top: 50px;
   margin: 0;
+}
+
+/* ===== Top header: title + top-right buttons ===== */
+
+.top-header {
+  display: flex;                  /* Put title and buttons on one line */
+  justify-content: space-between; /* Title on left, buttons on right */
+  align-items: center;
+  padding: 10px 20px;
+}
+
+/* Site title above navigation bar */
+.site-title {
+  margin: 0;
+  font-size: 24px;
+  text-align: left;               /* Override body center for title */
+}
+
+/* Container for Create Account / Login in top-right */
+.top-actions {
+  display: flex;
+  gap: 10px;                      /* Space between buttons */
+}
+
+/* Make header buttons a bit smaller if desired */
+.top-actions .btn {
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+/* General page content spacing (below header + nav) */
+main {
+  padding-top: 20px;
 }
 
 /* Common form container */
@@ -65,17 +97,17 @@ form button[type="submit"] {
 /* The main navigation container */
 .navbar {
   background-color: #333; /* Dark background for contrast */
-  overflow: hidden; /* Ensures content stays inside the navbar */
+  overflow: hidden;       /* Ensures content stays inside the navbar */
 }
 
 /* Unordered list styling for the navbar links */
 .navbar ul {
-  list-style: none;      /* Removes default bullet points from list items */
-  margin: 0;             /* Removes default margin around the list */
-  padding: 0;            /* Removes default padding around the list */
-  display: flex;         /* Enables flexbox layout for horizontal alignment */
-  justify-content: center; /* Centers the navigation links horizontally */
-  align-items: center;     /* Vertically centers the links within the navbar */
+  list-style: none;         /* Removes default bullet points from list items */
+  margin: 0;                /* Removes default margin around the list */
+  padding: 0;               /* Removes default padding around the list */
+  display: flex;            /* Enables flexbox layout for horizontal alignment */
+  justify-content: center;  /* Centers the navigation links horizontally */
+  align-items: center;      /* Vertically centers the links within the navbar */
 }
 
 /* Each individual navigation list item */
@@ -96,4 +128,43 @@ form button[type="submit"] {
   border-radius: 4px;        /* Rounds the edges for a subtle styling effect */
 }
 
+/* ===== Popular Stocks section (if you are using it) ===== */
+.stock-section {
+  margin: 20px auto;
+  max-width: 600px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  padding: 16px 20px;
+}
 
+.stock-section h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+#stock-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#stock-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+#stock-list li:last-child {
+  border-bottom: none;
+}
+
+.stock-symbol {
+  font-weight: bold;
+}
+
+.stock-price {
+  color: #333;
+}

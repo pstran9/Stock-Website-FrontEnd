@@ -11,6 +11,15 @@
 
 <body>
 
+  <header class="top-header">
+    <h1 class="site-title">Cloud-Based Stock Trading Simulation</h1>
+
+    <div class="top-actions">
+      <a href="create-account.html" class="btn create-btn">Create Account</a>
+      <a href="login.html" class="btn login-btn">Login</a>
+    </div>
+  </header>
+
   <!-- Navigation Bar -->
   <nav class="navbar">
     <ul>
@@ -20,7 +29,6 @@
     </ul>
   </nav>
 
-  <h1>Cloud-Based Stock Trading Simulation</h1>
 
   <!-- Popular Stocks (Admin Configured) -->
 <section class="stock-section">
@@ -28,28 +36,6 @@
   <!-- This list will be filled by JavaScript -->
   <ul id="stock-list"></ul>
 </section>
-
-  <!-- Create Account button -->
-  <button class="btn create-btn" type="button" onclick="createAccount()">
-    Create Account
-  </button>
-
-  <!-- Login button -->
-  <button class="btn login-btn" type="button" onclick="login()">
-    Login
-  </button>
-
-  <script>
-    function createAccount() {
-      alert("Create Account clicked");
-      // window.location.href = "register.html";
-    }
-
-    function login() {
-      alert("Login clicked");
-      // window.location.href = "login.html";
-    }
-  </script>
 
   <script src="main.js"></script>
 

@@ -8,23 +8,31 @@ body {
 /* ===== Top header: title + top-right buttons ===== */
 
 .top-header {
-  display: flex;                  /* Put title and buttons on one line */
-  justify-content: space-between; /* Title on left, buttons on right */
+  display: flex;
   align-items: center;
   padding: 10px 20px;
+  position: relative;      /* Needed so absolute children use this as reference */
+  height: 60px; 
 }
 
 /* Site title above navigation bar */
 .site-title {
   margin: 0;
   font-size: 24px;
-  text-align: left;               /* Override body center for title */
+  position: absolute;     /* Take it out of normal flow */
+  left: 50%;              /* Move to center */
+  transform: translateX(-50%); /* Pull back left by half its width */
+  width: 100%; 
 }
 
 /* Container for Create Account / Login in top-right */
 .top-actions {
   display: flex;
-  gap: 10px;                      /* Space between buttons */
+  gap: 10px;
+  position: absolute;      /* Pin this whole group */
+  right: 20px;             /* Distance from right edge */
+  top: 50%;                /* Rough vertical center within header */
+  transform: translateY(-50%);
 }
 
 /* Make header buttons a bit smaller if desired */

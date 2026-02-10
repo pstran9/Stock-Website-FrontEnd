@@ -61,3 +61,25 @@ function renderPopularStocks() {
 // At that point, we call renderPopularStocks so it can safely
 // find the #stock-list element and fill it.
 document.addEventListener("DOMContentLoaded", renderPopularStocks);
+
+// ==============================
+// Return Confirmation Message for Contact Page.
+// ==============================
+
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("contact-form");
+    const confirmationMessage = document.getElementById("confirmation-message");
+
+    if (!form || !confirmationMessage) return; // Not the contact page
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+        form.reset();
+        confirmationMessage.style.display = "block";
+
+        setTimeout(() => {
+            confirmationMessage.style.display = "none";
+        }, 5000);
+    });
+});
+

@@ -225,3 +225,105 @@ form button[type="submit"] {
 #contact-form button[type="submit"]:hover {
     background-color: #555;
 }
+
+/* Admin-specific styles */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.admin-section {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.admin-section h2 {
+    margin-bottom: 16px;
+    color: #1f2937;
+}
+
+.table-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.table-controls input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+#adminStockTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#adminStockTable th,
+#adminStockTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+#adminStockTable th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+}
+
+#adminStockTable tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.note {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-top: 12px;
+}
+
+/* Admin action buttons */
+.btn-edit {
+    background-color: #3b82f6;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-right: 4px;
+}
+
+.btn-edit:hover {
+    background-color: #2563eb;
+}
+
+.btn-delete {
+    background-color: #ef4444;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-delete:hover {
+    background-color: #dc2626;
+}
+
+#stockCount {
+    color: #10b981;
+    font-weight: bold;
+}
+

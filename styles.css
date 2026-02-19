@@ -310,7 +310,7 @@ form button[type="submit"] {
   font-weight: bold;
 }
 
-/* ===== MARKET TABLE - Match Admin Styling ===== */
+/* ===== MARKET TABLE ===== */
 .table-section {
   background-color: #ffffff;
   border-radius: 8px;
@@ -475,4 +475,237 @@ form button[type="submit"] {
 
 .btn-sell:hover {
   background-color: #dc2626;
+}
+
+/* ===== USER HOME PAGE STYLES ===== */
+
+/* Pie chart container */
+.pie-chart-container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#portfolioPie {
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  margin-right: 8px;
+}
+
+/* Purchasing power display */
+.purchasing-power-display {
+  text-align: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  border: 2px solid #0ea5e9;
+}
+
+.power-amount {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #0369a1;
+  margin: 0;
+}
+
+.power-note {
+  color: #64748b;
+  font-size: 1.1rem;
+  margin: 8px 0 0;
+}
+
+/* CENTERED Fund buttons */
+.funds-buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.withdraw-btn {
+  background-color: #ef4444 !important;
+  color: white !important;
+}
+
+.withdraw-btn:hover {
+  background-color: #dc2626 !important;
+}
+
+.table-controls a, .funds-buttons-container a {
+  padding: 12px 24px;
+  font-size: 1rem;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.table-controls a:hover, .funds-buttons-container a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* ===== PORTFOLIO PAGE STYLES ===== */
+
+.portfolio-controls-left,
+.portfolio-controls-right {
+  flex: 1;
+  min-width: 250px;
+}
+
+.portfolio-controls-right {
+  text-align: right;
+}
+
+.portfolio-action-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.portfolio-action-buttons .btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  white-space: nowrap; 
+  box-sizing: border-box;
+}
+
+/* Ensure controls layout works */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 16px 0 24px;
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  align-items: flex-end;
+}
+
+/* ===== SELL STOCKS PAGE STYLES ===== */
+
+/* Sell Stocks Page - Fixed Button Alignment */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+#sellForm input[type="number"],
+#sellForm select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccd1e4;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+#sellForm input[type="number"]:focus,
+#sellForm select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.error-message {
+  margin-top: 4px;
+  font-size: 0.85rem;
+}
+
+/* Button aligns perfectly with form fields */
+#sellForm .control-group:last-child {
+  margin-top: 10px;
+}
+
+#sellForm button[type="submit"] {
+  width: 100%;
+  padding: 12px 20px;
+  height: 48px; /* Matches input height + padding */
+  box-sizing: border-box;
+  border: none;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.confirm-details {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  border-left: 4px solid #10b981;
+}
+
+.confirm-details div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+.confirm-details .label {
+  font-weight: 500;
+  color: #64748b;
+}
+
+.confirm-details .value {
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.modal-actions .btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  flex: 1;
+  max-width: 140px;
 }

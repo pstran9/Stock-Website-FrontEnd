@@ -281,3 +281,385 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// ==============================
+// User Home Page JavaScript
+// ==============================
+// User Home Page - Dynamic Portfolio & Cash
+
+let portfolioData = []; // Will be populated from backend
+
+// Color palette for pie slices
+const colorPalette = [
+  '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+  '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
+];
+
+async function loadUserData() {
+  try {
+    // Fetch portfolio and cash from your backend API
+    const response = await fetch('/api/user/dashboard');
+    
+    if (!response.ok) {
+      throw new Error('Failed to load dashboard data');
+    }
+    
+    const data = await response.json();
+    
+    // Expected backend response format:
+    // {
+    //   cashBalance: 25000,
+    //   portfolio: [
+    //     { symbol: 'AAPL', value: 5000 },
+    //     { symbol: 'TSLA', value: 3000 },
+    //     { symbol: 'GOOGL', value: 2000 }
+    //   ]
+    // }
+    
+    portfolioData = data.portfolio || [];
+    updateCashBalance(data.cashBalance || 0);
+    updatePortfolioDisplay();
+    
+  } catch (error) {
+    console.error('Error loading dashboard:', error);
+    document.getElementById('portfolioTitle').textContent = 'Error loading portfolio';
+  }
+}
+
+function updateCashBalance(amount) {
+  const cashEl = document.getElementById('cashBalance');
+  cashEl.textContent = amount.toLocaleString();
+}
+
+function updatePortfolioDisplay() {
+  const totalValue = portfolioData.reduce((sum, item) => sum + item.value, 0);
+  const titleEl = document.getElementById('portfolioTitle');
+  
+  if (totalValue === 0) {
+    titleEl.textContent = 'Portfolio Allocation (No holdings)';
+    document.querySelector('.pie-legend').innerHTML = '<div>No stocks held</div>';
+    return;
+  }
+  
+  titleEl.textContent = `Portfolio Allocation (Total Value: $${totalValue.toLocaleString()})`;
+  updatePieLegend();
+  drawPieChart();
+}
+
+function updatePieLegend() {
+  const legendEl = document.getElementById('pieLegend');
+  legendEl.innerHTML = portfolioData.map((item, index) => 
+    `<div><span class="legend-color" style="background: ${colorPalette[index % colorPalette.length]};"></span>${item.symbol} ($${item.value.toLocaleString()})</div>`
+  ).join('');
+}
+
+function drawPieChart() {
+  const canvas = document.getElementById('portfolioPie');
+  if (!canvas || portfolioData.length === 0) return;
+  
+  const ctx = canvas.getContext('2d');
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const radius = 180;
+
+  const total = portfolioData.reduce((sum, item) => sum + item.value, 0);
+  let startAngle = 0;
+
+  portfolioData.forEach((item, index) => {
+    const sliceAngle = (item.value / total) * 2 * Math.PI;
+    const color = colorPalette[index % colorPalette.length];
+    
+    ctx.fillStyle = color;
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    startAngle += sliceAngle;
+  });
+}
+
+// Auto-refresh every 30 seconds (or call manually after buy/sell)
+function refreshDashboard() {
+  loadUserData();
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  loadUserData();
+  // Auto-refresh every 30 seconds
+  setInterval(refreshDashboard, 30000);
+});
+
+// Global function for other pages to trigger refresh (e.g. after buy/sell)
+window.refreshUserDashboard = refreshDashboard;
+
+// ==============================
+// User Buy Stock Market Page
+// ==============================
+let availableStocks = [];
+
+async function loadAvailableStocks() {
+  try {
+    const response = await fetch('/api/stocks/available');
+    
+    if (!response.ok) throw new Error('Failed to load stocks');
+    
+    availableStocks = await response.json();
+    populateStocksTable();
+    
+  } catch (error) {
+    console.error('Error loading stocks:', error);
+    document.getElementById('stocksTableBody').innerHTML = 
+      '<tr><td colspan="7" style="text-align: center; color: #dc2626;">Error loading stocks</td></tr>';
+  }
+}
+
+function populateStocksTable(stocksToShow = availableStocks) {
+  const tbody = document.getElementById('stocksTableBody');
+  
+  if (stocksToShow.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No stocks available</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = stocksToShow.map(stock => {
+    const isPositive = stock.priceChange >= 0;
+    const changePercent = ((stock.priceChange / (stock.price - stock.priceChange)) * 100).toFixed(2);
+    
+    return `
+      <tr>
+        <td>${stock.name}</td>
+        <td><strong>${stock.ticker}</strong></td>
+        <td>${stock.sector}</td>
+        <td class="price">$${stock.price.toLocaleString()}</td>
+        <td class="${isPositive ? 'positive' : 'negative'}">
+          ${isPositive ? '+' : ''}$${Math.abs(stock.priceChange).toLocaleString()}
+        </td>
+        <td class="${isPositive ? 'positive' : 'negative'}">
+          ${isPositive ? '+' : ''}${changePercent}%
+        </td>
+        <td class="actions-cell">
+          <a href="user_buy_stocks.html?ticker=${stock.ticker}" class="btn-buy">Buy</a>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Sector filter (bonus feature using your existing controls)
+document.getElementById('stockFilter')?.addEventListener('change', function() {
+  const filter = this.value;
+  const filteredStocks = filter === 'all' 
+    ? availableStocks 
+    : availableStocks.filter(stock => stock.sector.toLowerCase().includes(filter));
+  populateStocksTable(filteredStocks);
+});
+
+// Initialize stocks page
+if (document.getElementById('stockTable')) {
+  document.addEventListener('DOMContentLoaded', loadAvailableStocks);
+}
+
+// ==============================
+// User Portfolio Page Function
+// ==============================
+let userPortfolio = [];
+
+async function loadUserPortfolio() {
+  try {
+    const response = await fetch('/api/user/portfolio');
+    
+    if (!response.ok) throw new Error('Failed to load portfolio');
+    
+    userPortfolio = await response.json();
+    populatePortfolioTable();
+    
+  } catch (error) {
+    console.error('Error loading portfolio:', error);
+    document.getElementById('portfolioTableBody').innerHTML = 
+      '<tr><td colspan="6" style="text-align: center; color: #dc2626;">Error loading portfolio</td></tr>';
+  }
+}
+
+function populatePortfolioTable() {
+  const tbody = document.getElementById('portfolioTableBody');
+  const totalValueEl = document.getElementById('totalPortfolioValue');
+  
+  if (userPortfolio.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No stocks owned</td></tr>';
+    totalValueEl.textContent = '$0.00';
+    return;
+  }
+  
+  const totalPortfolioValue = userPortfolio.reduce((sum, holding) => sum + holding.totalValue, 0);
+  totalValueEl.textContent = `$${totalPortfolioValue.toLocaleString()}`;
+  
+  tbody.innerHTML = userPortfolio.map(holding => {
+    return `
+      <tr>
+        <td>${holding.name}</td>
+        <td><strong>${holding.ticker}</strong></td>
+        <td class="price">$${holding.pricePerShare.toLocaleString()}</td>
+        <td><strong>${holding.sharesOwned.toLocaleString()}</strong></td>
+        <td class="price">$${holding.totalValue.toLocaleString()}</td>
+        <td class="actions-cell">
+          <a href="user_sell_stock.html?ticker=${holding.ticker}&shares=${holding.sharesOwned}" class="btn-sell">Sell</a>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Initialize portfolio page
+if (document.getElementById('portfolioTableBody')) {
+  document.addEventListener('DOMContentLoaded', loadUserPortfolio);
+}
+
+// ==============================
+// Sell Stocks Page Function
+// ==============================
+
+async function loadUserPortfolioForSell() {
+  try {
+    const response = await fetch('/api/user/portfolio');
+    if (!response.ok) throw new Error('Failed to load portfolio');
+    
+    userPortfolio = await response.json();
+    populateStockSelect();
+    
+  } catch (error) {
+    console.error('Error:', error);
+    document.getElementById('stockSelect').innerHTML = '<option>Error loading portfolio</option>';
+  }
+}
+
+function populateStockSelect() {
+  const select = document.getElementById('stockSelect');
+  select.innerHTML = '<option value="">Choose a stock...</option>';
+  
+  userPortfolio.forEach(stock => {
+    select.innerHTML += `<option value="${stock.ticker}" data-shares="${stock.sharesOwned}" data-price="${stock.pricePerShare}">
+      ${stock.name} (${stock.ticker}) - ${stock.sharesOwned} shares
+    </option>`;
+  });
+}
+
+document.getElementById('stockSelect').addEventListener('change', function() {
+  const selectedOption = this.options[this.selectedIndex];
+  const sharesOwned = parseInt(selectedOption.dataset.shares);
+  const pricePerShare = parseFloat(selectedOption.dataset.price);
+  
+  const stockInfo = document.getElementById('stockInfo');
+  if (this.value) {
+    stockInfo.textContent = `${selectedOption.textContent} | Current Price: $${pricePerShare.toLocaleString()}`;
+  } else {
+    stockInfo.textContent = '';
+  }
+  
+  // Update shares input max
+  const sharesInput = document.getElementById('sharesToSell');
+  sharesInput.max = sharesOwned;
+  sharesInput.value = '';
+  document.getElementById('sharesError').style.display = 'none';
+});
+
+document.getElementById('sellForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const ticker = document.getElementById('stockSelect').value;
+  const sharesInput = document.getElementById('sharesToSell');
+  const sharesToSell = parseInt(sharesInput.value);
+  
+  if (!validateSellInput(ticker, sharesToSell)) return;
+  
+  const selectedOption = document.querySelector(`#stockSelect option[value="${ticker}"]`);
+  const pricePerShare = parseFloat(selectedOption.dataset.price);
+  const totalSellValue = sharesToSell * pricePerShare;
+  
+  showConfirmModal(ticker, sharesToSell, pricePerShare, totalSellValue);
+});
+
+function validateSellInput(ticker, sharesToSell) {
+  const sharesError = document.getElementById('sharesError');
+  const selectedOption = document.querySelector(`#stockSelect option[value="${ticker}"]`);
+  const sharesOwned = parseInt(selectedOption.dataset.shares);
+  
+  if (!ticker) {
+    sharesError.textContent = 'Please select a stock';
+    sharesError.style.display = 'block';
+    return false;
+  }
+  
+  if (!sharesToSell || sharesToSell <= 0) {
+    sharesError.textContent = 'Enter a valid number of shares (1 or more)';
+    sharesError.style.display = 'block';
+    return false;
+  }
+  
+  if (sharesToSell > sharesOwned) {
+    sharesError.textContent = `You only own ${sharesOwned} shares`;
+    sharesError.style.display = 'block';
+    return false;
+  }
+  
+  sharesError.style.display = 'none';
+  return true;
+}
+
+function showConfirmModal(ticker, sharesToSell, pricePerShare, totalSellValue) {
+  const selectedOption = document.querySelector(`#stockSelect option[value="${ticker}"]`);
+  const stockName = selectedOption.textContent.split(' (')[0];
+  
+  document.getElementById('confirmDetails').innerHTML = `
+    <div><span class="label">Stock:</span><span class="value">${stockName}</span></div>
+    <div><span class="label">Ticker:</span><span class="value">${ticker}</span></div>
+    <div><span class="label">Shares to Sell:</span><span class="value">${sharesToSell.toLocaleString()}</span></div>
+    <div><span class="label">Price per Share:</span><span class="value">$${pricePerShare.toLocaleString()}</span></div>
+    <div style="border-top: 2px solid #e5e7eb; padding-top: 12px; margin-top: 12px;">
+      <span class="label">Total Sell Value:</span>
+      <span class="value positive">$${totalSellValue.toLocaleString()}</span>
+    </div>
+  `;
+  
+  document.getElementById('confirmModal').style.display = 'flex';
+}
+
+document.getElementById('cancelSellBtn').addEventListener('click', function() {
+  document.getElementById('confirmModal').style.display = 'none';
+});
+
+document.getElementById('confirmSellBtn').addEventListener('click', async function() {
+  const ticker = document.getElementById('stockSelect').value;
+  const sharesToSell = parseInt(document.getElementById('sharesToSell').value);
+  
+  try {
+    const response = await fetch('/api/user/sell', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticker, shares: sharesToSell })
+    });
+    
+    if (response.ok) {
+      alert('Sell order confirmed! Portfolio updated.');
+      window.refreshUserDashboard?.(); // Refresh dashboard if available
+      document.getElementById('confirmModal').style.display = 'none';
+      document.getElementById('sellForm').reset();
+      loadUserPortfolioForSell(); // Reload portfolio
+    } else {
+      alert('Sell failed. Please try again.');
+    }
+  } catch (error) {
+    alert('Error processing sell order.');
+  }
+});
+
+// Initialize
+if (document.getElementById('sellForm')) {
+  document.addEventListener('DOMContentLoaded', loadUserPortfolioForSell);
+}

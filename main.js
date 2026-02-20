@@ -663,3 +663,136 @@ document.getElementById('confirmSellBtn').addEventListener('click', async functi
 if (document.getElementById('sellForm')) {
   document.addEventListener('DOMContentLoaded', loadUserPortfolioForSell);
 }
+
+// ==============================
+// Sell Stocks Page Function
+// ==============================
+
+let userTransactions = [];
+let filteredTransactions = [];
+
+// Load from backend API
+async function loadUserTransactions() {
+  try {
+    const response = await fetch('/api/user/transactions');
+    if (!response.ok) throw new Error('Failed to load transactions');
+
+    userTransactions = await response.json();
+    // default filtered set = all
+    filteredTransactions = [...userTransactions];
+
+    applySort();
+    renderTransactionsTable();
+
+  } catch (error) {
+    console.error('Error loading transactions:', error);
+    const tbody = document.getElementById('transactionsTableBody');
+    const msg = document.getElementById('transactionsEmptyMessage');
+
+    if (tbody) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" style="text-align:center; color:#dc2626;">Error loading transactions</td></tr>';
+    }
+    if (msg) {
+      msg.style.display = 'none';
+    }
+  }
+}
+
+// Apply search + keep current sort
+function applySearch() {
+  const searchInput = document.getElementById('transactionSearch');
+  const query = (searchInput?.value || '').trim().toLowerCase();
+
+  if (!query) {
+    filteredTransactions = [...userTransactions];
+  } else {
+    filteredTransactions = userTransactions.filter(tx => {
+      const name = (tx.stockName || '').toLowerCase();
+      const ticker = (tx.ticker || '').toLowerCase();
+      return name.includes(query) || ticker.includes(query);
+    });
+  }
+
+  applySort();
+  renderTransactionsTable();
+}
+
+// Apply sort order based on select
+function applySort() {
+  const sortSelect = document.getElementById('sortOrder');
+  const order = sortSelect ? sortSelect.value : 'newest';
+
+  filteredTransactions.sort((a, b) => {
+    // Build a Date from date + time strings
+    const aDate = new Date(`${a.date}T${a.time || '00:00:00'}`);
+    const bDate = new Date(`${b.date}T${b.time || '00:00:00'}`);
+
+    return order === 'oldest' ? aDate - bDate : bDate - aDate;
+  });
+}
+
+// Render table body
+function renderTransactionsTable() {
+  const tbody = document.getElementById('transactionsTableBody');
+  const emptyMsg = document.getElementById('transactionsEmptyMessage');
+  if (!tbody) return;
+
+  if (!filteredTransactions.length) {
+    tbody.innerHTML =
+      '<tr><td colspan="7" style="text-align:center;">No transactions found</td></tr>';
+    if (emptyMsg) emptyMsg.style.display = 'block';
+    return;
+  }
+
+  if (emptyMsg) emptyMsg.style.display = 'none';
+
+  tbody.innerHTML = filteredTransactions.map(tx => {
+    const actionUpper = (tx.action || '').toUpperCase();
+    const isBuy = actionUpper === 'BUY' || actionUpper === 'BOUGHT';
+    const actionClass = isBuy ? 'action-buy' : 'action-sell';
+    const formattedTotalPrice = typeof tx.totalPrice === 'number'
+      ? `$${tx.totalPrice.toLocaleString()}`
+      : tx.totalPrice;
+
+    return `
+      <tr>
+        <td>${tx.date || ''}</td>
+        <td>${tx.time || ''}</td>
+        <td>${tx.stockName || ''}</td>
+        <td><strong>${tx.ticker || ''}</strong></td>
+        <td>${tx.totalShares != null ? tx.totalShares.toLocaleString() : ''}</td>
+        <td class="price">${formattedTotalPrice || ''}</td>
+        <td class="${actionClass}">${isBuy ? 'Bought' : 'Sold'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Wire up events when this page loads
+document.addEventListener('DOMContentLoaded', () => {
+  if (!document.getElementById('transactionsTable')) return;
+
+  // Load data
+  loadUserTransactions();
+
+  // Search: button and Enter key
+  const searchBtn = document.getElementById('transactionSearchBtn');
+  const searchInput = document.getElementById('transactionSearch');
+
+  if (searchBtn) searchBtn.addEventListener('click', applySearch);
+  if (searchInput) {
+    searchInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') applySearch();
+    });
+  }
+
+  // Sort select
+  const sortSelect = document.getElementById('sortOrder');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      applySort();
+      renderTransactionsTable();
+    });
+  }
+});

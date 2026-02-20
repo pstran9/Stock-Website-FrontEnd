@@ -747,3 +747,108 @@ form button[type="submit"] {
   margin: 0;                  
   height: auto;               
 }
+
+/* ===== ADMIN HOME PAGE ===== */
+
+/* Table header row with Edit button to the right */
+.table-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.table-header-row h2 {
+  margin: 0;
+}
+
+/* Optional smaller edit button style */
+.edit-table-btn {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+/* Calendar + hours layout side by side */
+.admin-hours-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+/* Card-style panels reusing your admin aesthetics */
+.admin-card {
+  flex: 1;
+  min-width: 260px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Calendar grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 0.8rem;
+}
+
+.calendar-grid .day-label {
+  font-weight: 600;
+  text-align: center;
+  color: #4b5563;
+}
+
+.calendar-grid .day-cell {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+}
+
+.calendar-grid .day-cell.closed {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.calendar-grid .day-cell.short {
+  background-color: #fef9c3;
+  color: #92400e;
+}
+
+/* Market hours section */
+.market-hours-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.market-hours-table,
+.holiday-hours-list {
+  margin-top: 8px;
+}
+
+.hours-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.hours-row:last-child {
+  border-bottom: none;
+}
+
+.holiday-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24px 0 12px 0;
+}

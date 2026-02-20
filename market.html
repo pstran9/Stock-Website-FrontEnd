@@ -46,7 +46,7 @@
         <section class="controls">
             <!-- Search input: filters table rows in real time -->
             <div class="control-group">
-                <label for="searchInput">Search (name or symbol):</label>
+                <label for="searchInput">Search (name or ticker):</label>
                 <input type="text" id="searchInput" placeholder="e.g. AAPL, Tesla, Bank" />
             </div>
 
@@ -69,8 +69,8 @@
                 <table id="stockTable">
                     <thead>
                         <tr>
-                            <th>Symbol</th>
-                            <th>Company</th>
+                            <th>Ticker</th>
+                            <th>Stock Name</th>
                             <th>Sector</th>
                             <th>Price ($)</th>
                             <th>Change</th>
@@ -94,8 +94,8 @@
             </p>
             <div id="stockDetails" class="details-card hidden">
                 <!-- These fields are populated dynamically by JavaScript -->
-                <p><strong>Symbol:</strong> <span id="detailSymbol"></span></p>
-                <p><strong>Company:</strong> <span id="detailCompany"></span></p>
+                <p><strong>Ticker:</strong> <span id="detailSymbol"></span></p>
+                <p><strong>Stock Name:</strong> <span id="detailCompany"></span></p>
                 <p><strong>Sector:</strong> <span id="detailSector"></span></p>
                 <p><strong>Price:</strong> $<span id="detailPrice"></span></p>
                 <p><strong>Change:</strong> <span id="detailChange"></span></p>

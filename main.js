@@ -796,3 +796,236 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// ==============================
+// Admin Home Page - Stocks, Market Hours, Holidays
+// ==============================
+
+let marketHoursData = null;
+
+// ------------------------------
+// Load and render stocks (max 15)
+// ------------------------------
+async function loadAdminHomeStocks() {
+  try {
+    // Adjust this endpoint to your backend
+    const response = await fetch('/api/stocks/available');
+    if (!response.ok) throw new Error('Failed to load stocks');
+
+    const allStocks = await response.json();
+    const limited = allStocks.slice(0, 15); // max 15 rows
+
+    const tbody = document.getElementById('adminHomeStockTableBody');
+    if (!tbody) return;
+
+    if (!limited.length) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" style="text-align:center;">No stocks available</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = limited.map(stock => {
+      // Expecting: { ticker, name, sector, price, priceChange }
+      const isPositive = stock.priceChange >= 0;
+      const prevPrice = stock.price - stock.priceChange;
+      const changePercent = prevPrice > 0
+        ? ((stock.priceChange / prevPrice) * 100).toFixed(2)
+        : '0.00';
+
+      return `
+        <tr>
+          <td><strong>${stock.ticker}</strong></td>
+          <td>${stock.name}</td>
+          <td>${stock.sector}</td>
+          <td class="price">$${stock.price.toLocaleString()}</td>
+          <td class="${isPositive ? 'positive' : 'negative'}">
+            ${isPositive ? '+' : ''}$${Math.abs(stock.priceChange).toLocaleString()}
+          </td>
+          <td class="${isPositive ? 'positive' : 'negative'}">
+            ${isPositive ? '+' : ''}${changePercent}%
+          </td>
+          <td class="actions-cell">
+            <a href="admin_edit_stocks.html?ticker=${stock.ticker}" class="btn-edit">Edit</a>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Error loading admin stocks:', error);
+    const tbody = document.getElementById('adminHomeStockTableBody');
+    if (tbody) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" style="text-align:center; color:#dc2626;">Error loading stocks</td></tr>';
+    }
+  }
+}
+
+// ------------------------------
+// Load and render market hours + holidays
+// ------------------------------
+async function loadMarketHours() {
+  try {
+    // Adjust this endpoint to your backend
+    const response = await fetch('/api/admin/market-hours');
+    if (!response.ok) throw new Error('Failed to load market hours');
+
+    marketHoursData = await response.json();
+
+    renderMarketHoursTable();
+    renderHolidayHoursList();
+    renderMarketCalendar();
+  } catch (error) {
+    console.error('Error loading market hours:', error);
+  }
+}
+
+function renderMarketHoursTable() {
+  const container = document.getElementById('marketHoursTable');
+  if (!container || !marketHoursData?.weeklyHours) return;
+
+  container.innerHTML = marketHoursData.weeklyHours.map(entry => {
+    // Expecting: { day: "Monday", open: "09:30", close: "16:00" } or nulls for closed
+    const isClosed = !entry.open || !entry.close;
+    const hoursText = isClosed
+      ? 'Closed'
+      : `${formatTime(entry.open)} – ${formatTime(entry.close)}`;
+
+    return `
+      <div class="hours-row">
+        <span>${entry.day}</span>
+        <span>${hoursText}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderHolidayHoursList() {
+  const container = document.getElementById('holidayHoursList');
+  if (!container) return;
+
+  const holidays = marketHoursData?.holidays || [];
+
+  if (!holidays.length) {
+    container.innerHTML = '<p class="note">No holiday hours configured.</p>';
+    return;
+  }
+
+  container.innerHTML = holidays.map(h => {
+    // Expecting: { date: "2026-01-01", type: "closed"|"short", label?, hours? }
+    const date = new Date(h.date);
+    const labelDate = date.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+
+    let desc;
+    if (h.type === 'closed') {
+      desc = 'Closed';
+    } else if (h.type === 'short') {
+      desc = h.hours || 'Short day';
+    } else {
+      desc = h.hours || 'Hours set';
+    }
+
+    return `
+      <div class="hours-row">
+        <span>${labelDate}</span>
+        <span>${desc}${h.label ? ` (${h.label})` : ''}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// HH:mm -> 9:30 AM
+function formatTime(hhmm) {
+  if (!hhmm) return '';
+  const [h, m] = hhmm.split(':').map(Number);
+  const date = new Date();
+  date.setHours(h, m, 0, 0);
+  return date.toLocaleTimeString(undefined, {
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+}
+
+// ------------------------------
+// Calendar using holidays from marketHoursData
+// ------------------------------
+function renderMarketCalendar() {
+  const calendarEl = document.getElementById('marketCalendar');
+  const monthLabelEl = document.getElementById('calendarMonthLabel');
+  if (!calendarEl || !monthLabelEl) return;
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth(); // 0-11
+
+  const monthNames = [
+    'January','February','March','April','May','June',
+    'July','August','September','October','November','December'
+  ];
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  monthLabelEl.textContent = `${monthNames[month]} ${year}`;
+
+  calendarEl.innerHTML = '';
+
+  // Day labels
+  dayNames.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'day-label';
+    el.textContent = d;
+    calendarEl.appendChild(el);
+  });
+
+  const firstDay = new Date(year, month, 1);
+  const startWeekday = firstDay.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Holidays that fall in this month
+  const holidays = (marketHoursData?.holidays || []).filter(h => {
+    const d = new Date(h.date);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+
+  const holidayMap = {};
+  holidays.forEach(h => {
+    const d = new Date(h.date).getDate();
+    holidayMap[d] = h;
+  });
+
+  // Blank cells before first of month
+  for (let i = 0; i < startWeekday; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'day-cell';
+    calendarEl.appendChild(empty);
+  }
+
+  // Actual days
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cell = document.createElement('div');
+    cell.className = 'day-cell';
+    cell.textContent = day;
+
+    const holiday = holidayMap[day];
+    if (holiday) {
+      if (holiday.type === 'closed') cell.classList.add('closed');
+      if (holiday.type === 'short') cell.classList.add('short');
+      cell.title = holiday.label || '';
+    }
+
+    calendarEl.appendChild(cell);
+  }
+}
+
+// ------------------------------
+// Initialization
+// ------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  // Only run on admin home
+  if (!document.getElementById('adminHomeStockTableBody')) return;
+
+  loadAdminHomeStocks();
+  loadMarketHours();
+});
